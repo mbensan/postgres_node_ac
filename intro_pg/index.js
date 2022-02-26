@@ -1,10 +1,10 @@
-const { Client } = require('pg')
-
+import pg from 'pg'
+import chalk from 'chalk'
 
 /* const client = new Client({
   connectionString: 'postgresql://postgres:1005@localhost:5432/jeans'
 }); */
-const client = new Client({
+const client = new pg.Client({
   user: 'postgres',
   host: 'localhost',
   database: 'jeans',
@@ -14,7 +14,7 @@ const client = new Client({
 
 client.connect(err => {
   if (err) {
-    console.log('Error en la conexión a postgres', error);
+    console.log(chalk.blue('Error en la conexión a postgres', error))
   }
 })
 
@@ -24,14 +24,33 @@ async function consulta() {
   console.log('Columnas', res.fields);
   client.end()
 }
+
+async function insert_complejo(color, talla) {
+  await client.query(`insert into ropa (nombre, color, talla) values ('Polera "Homero"', '${color}', '${talla}')`)
+}
+
 async function insercion () {
   const res = await client.query(
-    "insert into ropa (nombre, color, talla) values ('pantalon', 'azul', '46') returning *"
+    "insert into ropa (nombre, color, talla) values ('polera', 'rayas', 'M') returning *"
   )
   console.log('Resultado', res.rows);
   client.end()
 }
+
+async function actualizar() {
+  await client.query("update ropa set talla='M' where nombre='pantalon'")
+  client.end()
+}
+
+async function borrado() {
+  const res = await client.query('delete from ropa')
+  console.log(res.rows);
+  client.end()
+}
+
 // consulta()
-insercion()
+// insercion()
+// actualizar()
+borrado()
 
 
