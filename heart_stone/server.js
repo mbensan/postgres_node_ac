@@ -21,7 +21,11 @@ app.post('/ejercicios', async (req, res) => {
     // primero desempaquetamos la respuesta
     const datos = Object.values(JSON.parse(body));
     // llamamos a la función insertar
-    const algo = await insertar(datos[0], datos[1], datos[2], datos[3])
+    try {
+      const algo = await insertar(datos[0], datos[1], datos[2], datos[3])
+    } catch(error) {
+      return res.status(400).send(error.message)
+    }
     //res.end(JSON.stringify(respuesta));
     // devolvemos "algo"
     res.status(201)
