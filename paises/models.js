@@ -20,9 +20,39 @@ const Country = sql.define('Country', {
   },
   continent: {
     type: Sequelize.STRING,
+    allowNull: false,
+    defaultValue: 'No especificado'
+  }
+})
+
+const City = sql.define('City', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: {
+    type: Sequelize.STRING,
     allowNull: false
   }
 })
+
+// Ahora vamos a relacionar 2 modelos
+Country.hasMany(City)
+City.belongsTo(Country)
+
+/*
+Métodos implícitos que se añaden automáticamente, al relacionar 2 modelos
+Country => {
+  getCities()
+  createCity()
+  removeCity()
+}
+City => {
+  CountryId,
+  getCountry()
+}
+*/
 
 
 
@@ -57,34 +87,26 @@ async function borrar (id) {
   console.log('Pais borrado');
 }
 
-
-async function init () {
-  await sql.sync()
-  const accion = process.argv[2]
-  
-  if (accion == 'crear') {
-    
-    crear(process.argv[3], process.argv[4])
-    
-  } else if (accion == 'listar') {
-    
-    listar()
-    
-  } else if (accion == 'buscar') {
-  
-    const id = process.argv[3]
-    buscar(id)
-    
-  } else if (accion == 'editar') {
-    
-    const id = process.argv[3]
-    const nuevo_nombre = process.argv[4]
-    editar(id, nuevo_nombre)
-    
-  } else if (accion == 'borrar') {
-    
-    const id = process.argv[3]
-    borrar(id)
-  }
+async function add_ciudad_brasil () {
+  // Primera forma de agregar una ciudad a un pais
+  /*
+  const ciudad = await City.create({
+    name: 'Rio de Janeiro',
+    CountryId: 2
+  })
+  */
+  // segunda forma de agregar una ciudad a un pais
+  const brasil = await Country.findByPk(2)
+  brasil.createCity({
+    name: "Gramado"
+  })
 }
+
+async function ciudades_brasil() {
+  const brasil = await Country.findByPk(2)
+  cities = await brasil.getCities()
+  console.log(cities);
+}
+ciudades_brasil()
+
 
