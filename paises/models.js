@@ -26,16 +26,21 @@ const Country = sql.define('Country', {
 })
 
 const City = sql.define('City', {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  name: {
-    type: Sequelize.STRING,
-    allowNull: false
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false
+    }
+    // CountryId => id de su pais
+  }, 
+  {  // opcionalmente podemos definir nosotros el nombre que tendrá la tabla en Postgres
+    tableName: 'Cities'
   }
-})
+)
 
 // Ahora vamos a relacionar 2 modelos
 Country.hasMany(City)
@@ -69,9 +74,14 @@ async function listar () {
   console.log(paises)
 }
 
-async function buscar (id) {
+async function buscarPais (id) {
   const pais = await Country.findByPk(id)
   console.log(pais);
+}
+
+async function buscarCiudad (id) {
+  const ciudad = await City.findByPk(id)
+  console.log(ciudad);
 }
 
 async function editar (id, nuevo_nombre) {
@@ -107,6 +117,6 @@ async function ciudades_brasil() {
   cities = await brasil.getCities()
   console.log(cities);
 }
-ciudades_brasil()
-
+//ciudades_brasil()
+buscarCiudad(2)
 
