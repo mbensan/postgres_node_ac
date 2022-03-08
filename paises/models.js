@@ -42,9 +42,25 @@ const City = sql.define('City', {
   }
 )
 
-// Ahora vamos a relacionar 2 modelos
+const Language = sql.define('Language', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false
+  }
+})
+
+// Ahora vamos a relacionar 2 modelos (uno a muchos)
 Country.hasMany(City)
 City.belongsTo(Country)
+
+// Ahora vamos a relacionar 2 modelos (muchos a muchos)
+Country.belongsToMany(Language, {through: 'Speak'})
+Language.belongsToMany(Country, {through: 'Speak'})
 
 /*
 Métodos implícitos que se añaden automáticamente, al relacionar 2 modelos
@@ -59,7 +75,10 @@ City => {
 }
 */
 
-
+sql.sync()
+.then(() => {
+  console.log('Base de datos y tablas creadas');
+});
 
 async function crear(name, continent) {
   
@@ -117,6 +136,25 @@ async function ciudades_brasil() {
   cities = await brasil.getCities()
   console.log(cities);
 }
-//ciudades_brasil()
-buscarCiudad(2)
+
+async function add_multilingual() {
+  const chile = await Country.create({
+    name: 'Chile',
+    continent: 'tri'
+  })
+  const esp = await Language.create({
+    name: 'Espanol'
+  })
+  const map = await Language.create({
+    name: 'Mapudungun'
+  })
+  const arab = await Language.create({
+    name: 'Arabe'
+  })
+  // Ahora relacionamos ambas tablas
+  await chile.addLanguage(esp)
+  await chile.addLanguage(map)
+  await chile.addLanguage(arab)
+}
+add_multilingual()
 
